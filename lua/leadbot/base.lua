@@ -295,6 +295,33 @@ function LeadBot.StartCommand(bot, cmd)
     local botWeapon = bot:GetActiveWeapon()
     local controller = bot.ControllerBot
     local target = controller.Target
+    local selectWeap = "hands"
+    local range = 160000
+    local WepList0 = {
+        "weapon_bugbait",
+        "weapon_crwbr",
+        "weapon_fists",
+        "weapon_crowbar",
+        "weapon_stunstick",
+        "weapon_slapstick",
+        "weapon_longbar"
+    }
+    local WepList1 = {
+        "weapon_parkinsons",
+        "weapon_spraynpray",
+        "weapon_pistol",
+        "weapon_357",
+        "weapon_smg1",
+        "weapon_ar2",
+        "weapon_crossbow",
+        "weapon_rpg"
+    }
+    local WepList2 = {
+        "weapon_hossrifle",
+        "weapon_longbar",
+        "weapon_frag",
+        "weapon_shotgun"
+    }
 
     if !IsValid(controller) then return end
 
@@ -336,7 +363,42 @@ function LeadBot.StartCommand(bot, cmd)
         buttons = buttons + IN_DUCK
     end
 
-    bot:SelectWeapon((IsValid(controller.Target) and controller.Target:GetPos():DistToSqr(controller:GetPos()) < 129000 and "weapon_shotgun") or "weapon_smg1")
+    if(IsValid(controller.Target)) then
+    local TargetDist = controller.Target:GetPos():DistToSqr(controller:GetPos())
+    if (TargetDist < range/4 and TargetDist < range*2) then
+        for _, wepClass in ipairs(WepList0) do
+            if bot:HasWeapon( wepClass ) then
+              selectWeap = wepClass
+              weapon_type = 'mele'
+            end
+         end
+    elseif (TargetDist > range) then
+        for _, wepClass in ipairs(WepList1) do
+            if bot:HasWeapon( wepClass ) then
+              selectWeap = wepClass
+              weapon_type = "long_guns"
+            end
+         end
+    elseif (TargetDist < range) then
+        for _, wepClass in ipairs(WepList2) do
+            if bot:HasWeapon( wepClass ) then
+                selectWeap = wepClass
+                weapon_type = "shotgun"
+            end
+    end
+
+    end
+
+    if (TargetDist > range/4) then
+        buttons = buttons + IN_DUCK
+    end
+    
+    if selectWeap != nil then
+        bot:SelectWeapon(selectWeap)
+    end
+
+    end
+
     cmd:ClearButtons()
     cmd:ClearMovement()
     cmd:SetButtons(buttons)
