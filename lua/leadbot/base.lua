@@ -388,10 +388,6 @@ function LeadBot.StartCommand(bot, cmd)
     end
 
     end
-
-    if (TargetDist > range/4) then
-        buttons = buttons + IN_DUCK
-    end
     
     if selectWeap != nil then
         bot:SelectWeapon(selectWeap)
